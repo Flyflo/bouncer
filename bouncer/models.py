@@ -81,18 +81,21 @@ class Rule(object):
         subject can be either Classes or instances of classes
         self.subjects can either be string or Classes
         """
-        for sub in self.subjects:
-            if inspect.isclass(sub):
+
+        def matches(rule_subject):
+            if inspect.isclass(rule_subject):
                 if inspect.isclass(subject):
-                    return issubclass(subject, sub)
+                    return issubclass(subject, rule_subject)
                 else:
-                    return isinstance(subject, sub)
-            elif isinstance(sub, string_types):
+                    return isinstance(subject, rule_subject)
+            elif isinstance(rule_subject, string_types):
                 if inspect.isclass(subject):
-                    return subject.__name__ == sub
+                    return subject.__name__ == rule_subject
                 else:
-                    return subject.__class__.__name__ == sub
-        return False
+                    return subject.__class__.__name__ == rule_subject
+            return False
+
+        return any(matches(rule_subject) for rule_subject in self.subjects)
 
 
 
